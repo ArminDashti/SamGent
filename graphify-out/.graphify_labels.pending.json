@@ -1,0 +1,21 @@
+{
+  "0": "App.tsx",
+  "1": "index.js",
+  "2": "webui/package.json",
+  "3": "Collectors.kt",
+  "4": "compilerOptions",
+  "5": "MainActivity.kt",
+  "6": "dependencies",
+  "7": "Design System Master File",
+  "8": "compilerOptions",
+  "9": "devDependencies",
+  "10": "SamGent",
+  "11": ".oxlintrc.json",
+  "12": "SamGent Android app",
+  "13": "React + TypeScript + Vite",
+  "14": "tsconfig.json",
+  "15": "app/build.gradle.kts",
+  "16": "android-app/build.gradle.kts",
+  "17": "settings.gradle.kts",
+  "18": "gradlew"
+}

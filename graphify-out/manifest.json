@@ -1,0 +1,266 @@
+{
+  "android-app/app/build.gradle.kts": {
+    "mtime": 1794378928.3872232,
+    "seen": 1794379279.6259332,
+    "ast_hash": "d7faf27b10db1c0bec8456e739e2d32b",
+    "semantic_hash": ""
+  },
+  "android-app/app/src/main/java/com/samgent/app/ApiClient.kt": {
+    "mtime": 1794384644.7626498,
+    "seen": 1794385053.3785615,
+    "ast_hash": "dd64a672cf5b94976f76ca4327b3451b",
+    "semantic_hash": ""
+  },
+  "android-app/app/src/main/java/com/samgent/app/Collectors.kt": {
+    "mtime": 1794378836.283907,
+    "seen": 1794379279.625941,
+    "ast_hash": "9c91f119d733fb9e69e9162d804239fc",
+    "semantic_hash": ""
+  },
+  "android-app/app/src/main/java/com/samgent/app/MainActivity.kt": {
+    "mtime": 1794384651.543848,
+    "seen": 1794385053.378648,
+    "ast_hash": "c5987e55268c5830e5a3aa410b6f2144",
+    "semantic_hash": ""
+  },
+  "android-app/app/src/main/java/com/samgent/app/Prefs.kt": {
+    "mtime": 1794384641.8838682,
+    "seen": 1794385053.3786523,
+    "ast_hash": "069566aae9b66f0a8f7163a6861b0019",
+    "semantic_hash": ""
+  },
+  "android-app/app/src/main/java/com/samgent/app/SmsReceiver.kt": {
+    "mtime": 1794378904.645094,
+    "seen": 1794379279.6259446,
+    "ast_hash": "390b76cbb25d8b715c0f4687852f34fe",
+    "semantic_hash": ""
+  },
+  "android-app/app/src/main/java/com/samgent/app/SyncWorker.kt": {
+    "mtime": 1794378841.755982,
+    "seen": 1794379279.6259458,
+    "ast_hash": "356965f3da81a40b61399ce716cbe11f",
+    "semantic_hash": ""
+  },
+  "android-app/build.gradle.kts": {
+    "mtime": 1794378787.1301012,
+    "seen": 1794379279.625947,
+    "ast_hash": "435c2552f106754fa755f59dcde713d4",
+    "semantic_hash": ""
+  },
+  "android-app/settings.gradle.kts": {
+    "mtime": 1794378786.54454,
+    "seen": 1794379279.6259477,
+    "ast_hash": "6069a07e399eef7c7d8f6964d5cee999",
+    "semantic_hash": ""
+  },
+  "api/package.json": {
+    "mtime": 1794379018.6660516,
+    "seen": 1794379279.6259484,
+    "ast_hash": "f4200b0fe58d2c224f8f119ee72a6ae3",
+    "semantic_hash": ""
+  },
+  "api/src/auth.js": {
+    "mtime": 1794378606.5928137,
+    "seen": 1794379279.6259494,
+    "ast_hash": "ab258c7554967a34fecf3b4dcdef50ec",
+    "semantic_hash": ""
+  },
+  "api/src/db.js": {
+    "mtime": 1794378589.885097,
+    "seen": 1794379279.6259508,
+    "ast_hash": "604f0c7e2e0fefaf7391234cae01463c",
+    "semantic_hash": ""
+  },
+  "api/src/index.js": {
+    "mtime": 1794384601.3651161,
+    "seen": 1794385053.378675,
+    "ast_hash": "2a9c87482dcf6e8b6954d07d5003d3f6",
+    "semantic_hash": ""
+  },
+  "api/src/parsers/sms.js": {
+    "mtime": 1794379015.109099,
+    "seen": 1794379279.6259525,
+    "ast_hash": "4825bba83294cdef877d7051e46eb734",
+    "semantic_hash": ""
+  },
+  "api/src/parsers/sms.test.js": {
+    "mtime": 1794378605.319575,
+    "seen": 1794379279.6259532,
+    "ast_hash": "1e6705257d39836f9ddcf3e4c90d6ed7",
+    "semantic_hash": ""
+  },
+  "webui/.oxlintrc.json": {
+    "mtime": 1794288787.1643655,
+    "seen": 1794379279.6259544,
+    "ast_hash": "029f4905006c1fffd96bc863e2d98d3e",
+    "semantic_hash": ""
+  },
+  "webui/package.json": {
+    "mtime": 1794378663.368115,
+    "seen": 1794379279.625955,
+    "ast_hash": "d1c9c778685c3a83f5aa8ad70a3f882b",
+    "semantic_hash": ""
+  },
+  "webui/src/App.tsx": {
+    "mtime": 1794378774.5222673,
+    "seen": 1794379279.625956,
+    "ast_hash": "70b93e6114ef9a76ee47ede612cb7fd5",
+    "semantic_hash": ""
+  },
+  "webui/src/components/layout.tsx": {
+    "mtime": 1794378706.0443,
+    "seen": 1794379279.6259568,
+    "ast_hash": "e927bab3ed97905c2934aac644bc7592",
+    "semantic_hash": ""
+  },
+  "webui/src/components/ui/button.tsx": {
+    "mtime": 1794378694.370633,
+    "seen": 1794379279.6259577,
+    "ast_hash": "ff4184683617c2458c3937523ab093f6",
+    "semantic_hash": ""
+  },
+  "webui/src/components/ui/card.tsx": {
+    "mtime": 1794378698.601692,
+    "seen": 1794379279.6259584,
+    "ast_hash": "286088b40fc6ad00a55732f41d121042",
+    "semantic_hash": ""
+  },
+  "webui/src/components/ui/input.tsx": {
+    "mtime": 1794378695.6647053,
+    "seen": 1794379279.6259594,
+    "ast_hash": "fe61641f98aaa35733cf009e8a472f58",
+    "semantic_hash": ""
+  },
+  "webui/src/lib/api.ts": {
+    "mtime": 1794384741.350696,
+    "seen": 1794385053.3787057,
+    "ast_hash": "fd9e80bb59c123a009b4e5d1155432c0",
+    "semantic_hash": ""
+  },
+  "webui/src/lib/utils.ts": {
+    "mtime": 1794378679.392045,
+    "seen": 1794379279.6259615,
+    "ast_hash": "9a4cc6f9f3155ffdc1fa7c2c097f6429",
+    "semantic_hash": ""
+  },
+  "webui/src/main.tsx": {
+    "mtime": 1794378758.9888208,
+    "seen": 1794379279.6259623,
+    "ast_hash": "a3dc4c8b26595af827fe31849c83c1f7",
+    "semantic_hash": ""
+  },
+  "webui/src/pages/calls.tsx": {
+    "mtime": 1794378770.8134677,
+    "seen": 1794379279.625963,
+    "ast_hash": "c5e74b3c4480978a843dc6249e8a0b3d",
+    "semantic_hash": ""
+  },
+  "webui/src/pages/devices.tsx": {
+    "mtime": 1794384633.667693,
+    "seen": 1794385053.3787138,
+    "ast_hash": "da1f7f6205bc541e5ade7bbd3fab5620",
+    "semantic_hash": ""
+  },
+  "webui/src/pages/entities.tsx": {
+    "mtime": 1794378929.92459,
+    "seen": 1794379279.6259649,
+    "ast_hash": "5752beede911870818c2cd6ff79e03bc",
+    "semantic_hash": ""
+  },
+  "webui/src/pages/login.tsx": {
+    "mtime": 1794378770.6700306,
+    "seen": 1794379279.6259656,
+    "ast_hash": "9404275c636bb065167a45fa6c28e7b2",
+    "semantic_hash": ""
+  },
+  "webui/src/pages/search.tsx": {
+    "mtime": 1794378773.6042812,
+    "seen": 1794379279.6259663,
+    "ast_hash": "774b9dea107a10c28c97afc1ba54a87e",
+    "semantic_hash": ""
+  },
+  "webui/src/pages/sms.tsx": {
+    "mtime": 1794378770.7676704,
+    "seen": 1794379279.625967,
+    "ast_hash": "1ebe88880190ccd69e04f5acfb284880",
+    "semantic_hash": ""
+  },
+  "webui/tsconfig.app.json": {
+    "mtime": 1794378672.3341486,
+    "seen": 1794379279.6259682,
+    "ast_hash": "0cc3f311fa9e2b78b07b826c8b7b68e8",
+    "semantic_hash": ""
+  },
+  "webui/tsconfig.json": {
+    "mtime": 1794288787.2333941,
+    "seen": 1794379279.625969,
+    "ast_hash": "a3d39fa780ebff65444de257f291ce6c",
+    "semantic_hash": ""
+  },
+  "webui/tsconfig.node.json": {
+    "mtime": 1794288787.2459419,
+    "seen": 1794379279.62597,
+    "ast_hash": "f9cb81ddcea69ffdab672fc8c48dca66",
+    "semantic_hash": ""
+  },
+  "webui/vite.config.ts": {
+    "mtime": 1794378670.2715466,
+    "seen": 1794379279.6259706,
+    "ast_hash": "21da10b375f9d41584ee15e9d214e16f",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1794384656.148613,
+    "seen": 1794385053.3787317,
+    "ast_hash": "c97571c114dca50e69e160945a15f652",
+    "semantic_hash": ""
+  },
+  "android-app/README.md": {
+    "mtime": 1794384653.4458656,
+    "seen": 1794385053.3787334,
+    "ast_hash": "253040fa594c71ae26f44fda84b1ec2f",
+    "semantic_hash": ""
+  },
+  "design-system/samgent/MASTER.md": {
+    "mtime": 1794378647.2898388,
+    "seen": 1794379279.625973,
+    "ast_hash": "9394d43385d826deba14caa12e358ada",
+    "semantic_hash": ""
+  },
+  "docker-compose.yml": {
+    "mtime": 1794378566.9244864,
+    "seen": 1794379279.625974,
+    "ast_hash": "4e1e35d09538a4440e6528efac92ffdd",
+    "semantic_hash": ""
+  },
+  "webui/README.md": {
+    "mtime": 1794288787.2879045,
+    "seen": 1794379279.625975,
+    "ast_hash": "10495bfcc6c568eca4dab6dd5df795d3",
+    "semantic_hash": ""
+  },
+  "webui/index.html": {
+    "mtime": 1794378781.8252258,
+    "seen": 1794379279.6259758,
+    "ast_hash": "b8db94b16b00adf359e4c3f31530ec78",
+    "semantic_hash": ""
+  },
+  "webui/public/favicon.svg": {
+    "mtime": 1794288787.3785415,
+    "seen": 1794379279.6259766,
+    "ast_hash": "7e840862161341271697daa99a40d76b",
+    "semantic_hash": ""
+  },
+  "webui/src/assets/hero.png": {
+    "mtime": 1794288787.3268864,
+    "seen": 1794379279.6259775,
+    "ast_hash": "aead493361b27e7510691c5d7072dfc1",
+    "semantic_hash": ""
+  },
+  "android-app/gradlew": {
+    "mtime": 1794381347.2850938,
+    "seen": 1794385053.3786638,
+    "ast_hash": "f092910dfa8e47c5a37a452c3f6baf8a",
+    "semantic_hash": ""
+  }
+}

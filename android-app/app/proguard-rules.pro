@@ -1,0 +1,1 @@
+# SamGent default ProGuard rules
