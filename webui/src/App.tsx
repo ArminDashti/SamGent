@@ -8,6 +8,7 @@ import { EntitiesPage } from '@/pages/entities'
 import { LoginPage } from '@/pages/login'
 import { SearchPage } from '@/pages/search'
 import { SmsPage } from '@/pages/sms'
+import { TelemetryPage } from '@/pages/telemetry'
 
 function RequireAuth({ children }: { children: ReactNode }) {
   if (!getToken()) return <Navigate to="/login" replace />
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="sms" element={<SmsPage />} />
         <Route path="calls" element={<CallsPage />} />
         <Route path="entities" element={<EntitiesPage />} />
+        <Route path="telemetry" element={<TelemetryPage />} />
         <Route path="search" element={<SearchPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/devices" replace />} />

@@ -1,7 +1,14 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import jwt from '@fastify/jwt'
-import { openDb, seedAdmin } from './db.js'
+import {
+  openDb,
+  seedAdmin,
+  ensureDeviceIntervals,
+  getIntervals,
+  putIntervals,
+  parseIntervalBody,
+} from './db.js'
 import { verifyPassword, hashSecret, newApiKey, newDeviceUid } from './auth.js'
 import { parseSms } from './parsers/sms.js'
 
@@ -41,6 +48,44 @@ function requireDevice(request, reply) {
   return null
 }
 
+function clientUpdatedAtMs(value) {
+  if (value == null || value === '') return null
+  const ms = Date.parse(String(value))
+  return Number.isFinite(ms) ? ms : null
+}
+
+function applyIntervalPut(deviceId, body, updatedBy, reply) {
+  const parsed = parseIntervalBody(body)
+  if (parsed.error) {
+    reply.code(400).send({ error: parsed.error })
+    return null
+  }
+  const current = getIntervals(db, deviceId)
+  const clientMs = clientUpdatedAtMs(body?.updatedAt)
+  const serverMs = clientUpdatedAtMs(current.updatedAt) ?? 0
+  if (clientMs != null && clientMs < serverMs) {
+    reply.code(409).send({ error: 'stale_config', ...current })
+    return null
+  }
+  return putIntervals(db, deviceId, parsed.intervals, updatedBy)
+}
+
+function insertTelemetryRows(deviceId, kind, items) {
+  if (!Array.isArray(items) || items.length === 0) return 0
+  const insert = db.prepare(
+    `INSERT INTO device_telemetry (device_id, kind, recorded_at, payload_json)
+     VALUES (?, ?, ?, ?)`,
+  )
+  let n = 0
+  for (const item of items) {
+    if (!item || typeof item !== 'object') continue
+    const recordedAt = String(item.recordedAt || new Date().toISOString())
+    insert.run(deviceId, kind, recordedAt, JSON.stringify(item))
+    n += 1
+  }
+  return n
+}
+
 app.get('/health', async () => ({ ok: true }))
 
 app.post('/v1/auth/login', async (request, reply) => {
@@ -76,8 +121,10 @@ app.post('/v1/devices', { preHandler: [app.authenticate] }, async (request, repl
         `INSERT INTO devices (device_uid, label, api_key_hash, last_seen_at) VALUES (?, ?, ?, datetime('now'))`,
       )
       .run(deviceUid, label.trim(), apiKeyHash)
+    const id = Number(info.lastInsertRowid)
+    ensureDeviceIntervals(db, id)
     return {
-      id: Number(info.lastInsertRowid),
+      id,
       deviceUid,
       label: label.trim(),
       apiKey,
@@ -99,13 +146,68 @@ app.post('/v1/devices/:id/rotate', { preHandler: [app.authenticate] }, async (re
   return { id: row.id, deviceUid: row.deviceUid, label: row.label, apiKey }
 })
 
+app.get('/v1/devices/:id/intervals', { preHandler: [app.authenticate] }, async (request, reply) => {
+  const id = Number(request.params.id)
+  if (!Number.isInteger(id) || id < 1) return reply.code(400).send({ error: 'invalid_device_id' })
+  const row = db.prepare('SELECT id FROM devices WHERE id = ?').get(id)
+  if (!row) return reply.code(404).send({ error: 'device_not_found' })
+  return getIntervals(db, id)
+})
+
+app.put('/v1/devices/:id/intervals', { preHandler: [app.authenticate] }, async (request, reply) => {
+  const id = Number(request.params.id)
+  if (!Number.isInteger(id) || id < 1) return reply.code(400).send({ error: 'invalid_device_id' })
+  const row = db.prepare('SELECT id FROM devices WHERE id = ?').get(id)
+  if (!row) return reply.code(404).send({ error: 'device_not_found' })
+  const result = applyIntervalPut(id, request.body || {}, 'web', reply)
+  if (!result) return
+  return result
+})
+
+app.get('/v1/device/config', async (request, reply) => {
+  const device = requireDevice(request, reply)
+  if (!device) return
+  return getIntervals(db, device.id)
+})
+
+app.put('/v1/device/config', async (request, reply) => {
+  const device = requireDevice(request, reply)
+  if (!device) return
+  const result = applyIntervalPut(device.id, request.body || {}, 'device', reply)
+  if (!result) return
+  return result
+})
+
 app.post('/v1/ingest', async (request, reply) => {
   const device = requireDevice(request, reply)
   if (!device) return
 
-  const { sms = [], calls = [] } = request.body || {}
+  const body = request.body || {}
+  const {
+    sms = [],
+    calls = [],
+    gps = [],
+    networkSignal = [],
+    networkType = [],
+    battery = [],
+    wifi = [],
+    publicIp = [],
+  } = body
+
   if (!Array.isArray(sms) || !Array.isArray(calls)) {
     return reply.code(400).send({ error: 'sms_and_calls_must_be_arrays' })
+  }
+  for (const [name, arr] of [
+    ['gps', gps],
+    ['networkSignal', networkSignal],
+    ['networkType', networkType],
+    ['battery', battery],
+    ['wifi', wifi],
+    ['publicIp', publicIp],
+  ]) {
+    if (!Array.isArray(arr)) {
+      return reply.code(400).send({ error: `${name}_must_be_array` })
+    }
   }
 
   const insertSms = db.prepare(`
@@ -127,13 +229,19 @@ app.post('/v1/ingest', async (request, reply) => {
   let smsInserted = 0
   let callsInserted = 0
   let entitiesInserted = 0
+  let gpsInserted = 0
+  let networkSignalInserted = 0
+  let networkTypeInserted = 0
+  let batteryInserted = 0
+  let wifiInserted = 0
+  let publicIpInserted = 0
 
   const tx = db.transaction(() => {
     touch.run(device.id)
     for (const item of sms) {
       const provider_msg_id = String(item.providerMsgId || item.id || '')
       const address = String(item.address || '')
-      const body = String(item.body || '')
+      const smsBody = String(item.body || '')
       const received_at = String(item.receivedAt || new Date().toISOString())
       const direction = String(item.direction || 'inbox')
       if (!provider_msg_id || !address) continue
@@ -141,7 +249,7 @@ app.post('/v1/ingest', async (request, reply) => {
         device_id: device.id,
         provider_msg_id,
         address,
-        body,
+        body: smsBody,
         direction,
         received_at,
         raw_json: JSON.stringify(item),
@@ -149,7 +257,7 @@ app.post('/v1/ingest', async (request, reply) => {
       if (result.changes === 0) continue
       smsInserted += 1
       const smsId = Number(result.lastInsertRowid)
-      for (const ent of parseSms({ address, body })) {
+      for (const ent of parseSms({ address, body: smsBody })) {
         insertEntity.run(
           smsId,
           ent.type,
@@ -166,9 +274,7 @@ app.post('/v1/ingest', async (request, reply) => {
       const type = String(item.type || 'unknown')
       const duration_sec = Number(item.durationSec ?? 0)
       if (!number || !called_at) continue
-      const fingerprint =
-        item.fingerprint ||
-        `${number}|${called_at}|${type}|${duration_sec}`
+      const fingerprint = item.fingerprint || `${number}|${called_at}|${type}|${duration_sec}`
       const result = insertCall.run({
         device_id: device.id,
         fingerprint: String(fingerprint),
@@ -180,10 +286,66 @@ app.post('/v1/ingest', async (request, reply) => {
       })
       if (result.changes > 0) callsInserted += 1
     }
+
+    gpsInserted = insertTelemetryRows(device.id, 'gps', gps)
+    networkSignalInserted = insertTelemetryRows(device.id, 'network_signal', networkSignal)
+    networkTypeInserted = insertTelemetryRows(device.id, 'network_type', networkType)
+    batteryInserted = insertTelemetryRows(device.id, 'battery', battery)
+    wifiInserted = insertTelemetryRows(device.id, 'wifi', wifi)
+    publicIpInserted = insertTelemetryRows(device.id, 'public_ip', publicIp)
   })
 
   tx()
-  return { ok: true, smsInserted, callsInserted, entitiesInserted }
+  return {
+    ok: true,
+    smsInserted,
+    callsInserted,
+    entitiesInserted,
+    gpsInserted,
+    networkSignalInserted,
+    networkTypeInserted,
+    batteryInserted,
+    wifiInserted,
+    publicIpInserted,
+  }
+})
+
+app.get('/v1/telemetry', { preHandler: [app.authenticate] }, async (request) => {
+  const { deviceId, kind, limit = '100' } = request.query || {}
+  const lim = Math.min(Number(limit) || 100, 500)
+  let sql = `
+    SELECT t.id, t.device_id AS deviceId, d.label AS deviceLabel, t.kind,
+           t.recorded_at AS recordedAt, t.payload_json AS payloadJson
+    FROM device_telemetry t
+    JOIN devices d ON d.id = t.device_id
+    WHERE 1=1`
+  const params = []
+  if (deviceId) {
+    sql += ' AND t.device_id = ?'
+    params.push(Number(deviceId))
+  }
+  if (kind) {
+    sql += ' AND t.kind = ?'
+    params.push(String(kind))
+  }
+  sql += ' ORDER BY t.recorded_at DESC LIMIT ?'
+  params.push(lim)
+  return db.prepare(sql).all(...params).map((row) => {
+    let payload = null
+    try {
+      payload = JSON.parse(row.payloadJson)
+    } catch {
+      payload = row.payloadJson
+    }
+    return {
+      id: row.id,
+      deviceId: row.deviceId,
+      deviceLabel: row.deviceLabel,
+      kind: row.kind,
+      recordedAt: row.recordedAt,
+      payload,
+    }
+  })
 })
 
 app.get('/v1/sms', { preHandler: [app.authenticate] }, async (request) => {

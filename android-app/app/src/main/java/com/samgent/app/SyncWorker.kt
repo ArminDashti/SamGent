@@ -2,40 +2,59 @@ package com.samgent.app
 
 import android.content.Context
 import androidx.work.CoroutineWorker
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import java.util.concurrent.TimeUnit
 
 class SyncWorker(appContext: Context, params: WorkerParameters) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
         val prefs = Prefs(applicationContext)
         if (prefs.apiKey.isNullOrBlank()) return Result.success()
+        val forceAll = inputData.getBoolean(KEY_FORCE, false)
         return try {
-            val api = ApiClient(prefs)
-            val sms = Collectors.collectSms(applicationContext)
-            val calls = Collectors.collectCalls(applicationContext)
-            val res = api.ingest(sms, calls)
-            prefs.lastSyncStatus =
-                "OK ${res.optInt("smsInserted")} sms / ${res.optInt("callsInserted")} calls · ${System.currentTimeMillis()}"
+            val res = SyncEngine.run(applicationContext, prefs, forceAll = forceAll)
+            if (!res.optBoolean("skipped", false)) {
+                prefs.lastSyncStatus =
+                    "OK sms=${res.optInt("smsInserted")} calls=${res.optInt("callsInserted")} " +
+                        "gps=${res.optInt("gpsInserted")} bat=${res.optInt("batteryInserted")} · ${System.currentTimeMillis()}"
+            }
+            scheduleNext(applicationContext, prefs)
             Result.success()
         } catch (e: Exception) {
             prefs.lastSyncStatus = "FAIL ${e.message}"
+            scheduleNext(applicationContext, prefs)
             Result.retry()
         }
     }
 
     companion object {
-        private const val UNIQUE = "samgent-sync"
+        private const val UNIQUE = "samgent-sync-once"
+        const val KEY_FORCE = "forceAll"
 
-        fun schedule(context: Context) {
-            val req = PeriodicWorkRequestBuilder<SyncWorker>(15, TimeUnit.MINUTES).build()
-            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+        fun schedule(context: Context, prefs: Prefs = Prefs(context)) {
+            scheduleNext(context, prefs)
+        }
+
+        fun scheduleNext(context: Context, prefs: Prefs) {
+            val delayMs = prefs.nextDueDelayMs()
+            val req = OneTimeWorkRequestBuilder<SyncWorker>()
+                .setInitialDelay(delayMs, TimeUnit.MILLISECONDS)
+                .build()
+            WorkManager.getInstance(context).enqueueUniqueWork(
                 UNIQUE,
-                ExistingPeriodicWorkPolicy.UPDATE,
+                ExistingWorkPolicy.REPLACE,
                 req,
             )
+        }
+
+        fun enqueueNow(context: Context, forceAll: Boolean = false) {
+            val req = OneTimeWorkRequestBuilder<SyncWorker>()
+                .setInputData(workDataOf(KEY_FORCE to forceAll))
+                .build()
+            WorkManager.getInstance(context).enqueue(req)
         }
     }
 }

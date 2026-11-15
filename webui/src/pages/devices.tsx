@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { api } from '@/lib/api'
+import { INTERVAL_FIELDS, api, type DeviceIntervals } from '@/lib/api'
 
 type Device = Awaited<ReturnType<typeof api.devices>>[number]
 
@@ -20,6 +20,8 @@ export function DevicesPage() {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [editId, setEditId] = useState<number | null>(null)
+  const [intervals, setIntervals] = useState<DeviceIntervals | null>(null)
 
   async function reload() {
     const list = await api.devices()
@@ -69,6 +71,39 @@ export function DevicesPage() {
       await reload()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'rotate_failed')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function openIntervals(id: number) {
+    setBusy(true)
+    setError(null)
+    try {
+      const cfg = await api.getIntervals(id)
+      setEditId(id)
+      setIntervals(cfg)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'intervals_failed')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function saveIntervals(e: React.FormEvent) {
+    e.preventDefault()
+    if (editId == null || !intervals) return
+    setBusy(true)
+    setError(null)
+    try {
+      const body: Record<string, number | string> = { updatedAt: intervals.updatedAt }
+      for (const f of INTERVAL_FIELDS) {
+        body[f.key] = intervals[f.key]
+      }
+      const saved = await api.putIntervals(editId, body)
+      setIntervals(saved)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'save_intervals_failed')
     } finally {
       setBusy(false)
     }
@@ -141,6 +176,60 @@ export function DevicesPage() {
         </Card>
       ) : null}
 
+      {editId != null && intervals ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              Intervals · {rows.find((r) => r.id === editId)?.label ?? editId} (seconds)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" onSubmit={saveIntervals}>
+              {INTERVAL_FIELDS.map((f) => (
+                <div key={f.key} className="space-y-1">
+                  <label className="text-sm text-muted-foreground" htmlFor={`iv-${f.key}`}>
+                    {f.label}
+                  </label>
+                  <Input
+                    id={`iv-${f.key}`}
+                    type="number"
+                    min={60}
+                    max={86400}
+                    value={intervals[f.key]}
+                    disabled={busy}
+                    onChange={(e) =>
+                      setIntervals({
+                        ...intervals,
+                        [f.key]: Number(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+              ))}
+              <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-3">
+                <Button type="submit" disabled={busy}>
+                  Save intervals
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={busy}
+                  onClick={() => {
+                    setEditId(null)
+                    setIntervals(null)
+                  }}
+                >
+                  Close
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  Updated {intervals.updatedAt} by {intervals.updatedBy}
+                </p>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      ) : null}
+
       <Card>
         <CardHeader>
           <CardTitle>Registered</CardTitle>
@@ -167,15 +256,26 @@ export function DevicesPage() {
                     <td className="py-3 pr-4 font-mono text-xs">{d.deviceUid}</td>
                     <td className="py-3 pr-4">{d.lastSeenAt ?? '—'}</td>
                     <td className="py-3">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="min-h-9 px-3 text-xs"
-                        disabled={busy}
-                        onClick={() => onRotate(d.id)}
-                      >
-                        Rotate key
-                      </Button>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="min-h-9 px-3 text-xs"
+                          disabled={busy}
+                          onClick={() => openIntervals(d.id)}
+                        >
+                          Intervals
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="min-h-9 px-3 text-xs"
+                          disabled={busy}
+                          onClick={() => onRotate(d.id)}
+                        >
+                          Rotate key
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}

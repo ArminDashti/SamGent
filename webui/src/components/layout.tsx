@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { LogOut, MessageSquare, Phone, Search, Smartphone, Tags } from 'lucide-react'
+import { Activity, LogOut, MessageSquare, Phone, Search, Smartphone, Tags } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { setToken } from '@/lib/api'
 import { cn } from '@/lib/utils'
@@ -9,6 +9,7 @@ const links = [
   { to: '/sms', label: 'SMS', icon: MessageSquare },
   { to: '/calls', label: 'Calls', icon: Phone },
   { to: '/entities', label: 'Parsed', icon: Tags },
+  { to: '/telemetry', label: 'Telemetry', icon: Activity },
   { to: '/search', label: 'Search', icon: Search },
 ]
 

@@ -22,6 +22,32 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   return res.json() as Promise<T>
 }
 
+export type DeviceIntervals = {
+  sms: number
+  calls: number
+  gps: number
+  networkSignal: number
+  networkType: number
+  battery: number
+  wifiSignal: number
+  wifiSsid: number
+  publicIp: number
+  updatedAt: string
+  updatedBy: string
+}
+
+export const INTERVAL_FIELDS: Array<{ key: keyof Omit<DeviceIntervals, 'updatedAt' | 'updatedBy'>; label: string }> = [
+  { key: 'sms', label: 'SMS' },
+  { key: 'calls', label: 'Calls' },
+  { key: 'gps', label: 'GPS' },
+  { key: 'networkSignal', label: 'Network signal' },
+  { key: 'networkType', label: 'Network type' },
+  { key: 'battery', label: 'Battery' },
+  { key: 'wifiSignal', label: 'Wi‑Fi signal' },
+  { key: 'wifiSsid', label: 'Wi‑Fi SSID debounce' },
+  { key: 'publicIp', label: 'Public IP' },
+]
+
 export const api = {
   login: (username: string, password: string) =>
     request<{ token: string; username: string }>('/v1/auth/login', {
@@ -42,6 +68,28 @@ export const api = {
       `/v1/devices/${id}/rotate`,
       { method: 'POST', body: '{}' },
     ),
+  getIntervals: (id: number) => request<DeviceIntervals>(`/v1/devices/${id}/intervals`),
+  putIntervals: (id: number, body: Partial<DeviceIntervals> & Record<string, number | string>) =>
+    request<DeviceIntervals>(`/v1/devices/${id}/intervals`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    }),
+  telemetry: (params?: { deviceId?: string; kind?: string }) => {
+    const q = new URLSearchParams()
+    if (params?.deviceId) q.set('deviceId', params.deviceId)
+    if (params?.kind) q.set('kind', params.kind)
+    const s = q.toString()
+    return request<
+      Array<{
+        id: number
+        deviceId: number
+        deviceLabel: string
+        kind: string
+        recordedAt: string
+        payload: Record<string, unknown>
+      }>
+    >(`/v1/telemetry${s ? `?${s}` : ''}`)
+  },
   sms: (params?: { deviceId?: string; q?: string }) => {
     const q = new URLSearchParams()
     if (params?.deviceId) q.set('deviceId', params.deviceId)
