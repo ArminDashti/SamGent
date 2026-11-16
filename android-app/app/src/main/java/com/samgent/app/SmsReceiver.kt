@@ -10,6 +10,7 @@ class SmsReceiver : BroadcastReceiver() {
         if (intent.action != Telephony.Sms.Intents.SMS_RECEIVED_ACTION) return
         val prefs = Prefs(context)
         if (prefs.apiKey.isNullOrBlank()) return
-        SyncWorker.enqueueNow(context, forceAll = false)
+        // Force collect so a new SMS is not skipped while sms interval is not due.
+        SyncWorker.enqueueNow(context, forceAll = true)
     }
 }
