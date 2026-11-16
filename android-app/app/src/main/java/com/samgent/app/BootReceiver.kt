@@ -9,6 +9,7 @@ class BootReceiver : BroadcastReceiver() {
         if (intent?.action != Intent.ACTION_BOOT_COMPLETED) return
         val prefs = Prefs(context)
         if (prefs.apiKey.isNullOrBlank()) return
+        WifiMonitor.ensureRegistered(context)
         SyncWorker.schedule(context, prefs)
     }
 }

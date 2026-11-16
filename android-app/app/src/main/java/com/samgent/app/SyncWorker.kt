@@ -13,6 +13,7 @@ class SyncWorker(appContext: Context, params: WorkerParameters) : CoroutineWorke
     override suspend fun doWork(): Result {
         val prefs = Prefs(applicationContext)
         if (prefs.apiKey.isNullOrBlank()) return Result.success()
+        WifiMonitor.ensureRegistered(applicationContext)
         val forceAll = inputData.getBoolean(KEY_FORCE, false)
         return try {
             val res = SyncEngine.run(applicationContext, prefs, forceAll = forceAll)

@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnSync.setOnClickListener { syncNow() }
         binding.btnSaveIntervals.setOnClickListener { saveIntervals() }
 
+        WifiMonitor.ensureRegistered(this)
         SyncWorker.schedule(this, prefs)
         if (!prefs.apiKey.isNullOrBlank()) {
             lifecycleScope.launch {
@@ -111,6 +112,7 @@ class MainActivity : AppCompatActivity() {
         prefs.serverUrl = url
         prefs.apiKey = key
         refreshStatus()
+        WifiMonitor.ensureRegistered(this)
         SyncWorker.schedule(this, prefs)
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
