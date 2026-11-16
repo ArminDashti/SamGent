@@ -79,6 +79,14 @@
             android:text="Sync now" />
 
         <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Not configured"
+            android:textIsSelectable="true" />
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -99,13 +107,5 @@
             android:layout_marginTop="12dp"
             android:minHeight="48dp"
             android:text="Save intervals" />
-
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Not configured"
-            android:textIsSelectable="true" />
     </LinearLayout>
 </ScrollView>

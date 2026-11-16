@@ -188,14 +188,20 @@ class MainActivity : AppCompatActivity() {
                 val result = withContext(Dispatchers.IO) {
                     SyncEngine.run(this@MainActivity, prefs, forceAll = true)
                 }
-                prefs.lastSyncStatus =
+                val skipped = result.optBoolean("skipped", false)
+                prefs.lastSyncStatus = if (skipped) {
+                    "OK skipped (nothing due) · now"
+                } else {
                     "OK sms=${result.optInt("smsInserted")} calls=${result.optInt("callsInserted")} " +
                         "gps=${result.optInt("gpsInserted")} wifi=${result.optInt("wifiInserted")} · now"
+                }
                 SyncWorker.schedule(this@MainActivity, prefs)
                 refreshStatus()
+                Toast.makeText(this@MainActivity, prefs.lastSyncStatus, Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 prefs.lastSyncStatus = "FAIL ${e.message}"
                 refreshStatus()
+                Toast.makeText(this@MainActivity, prefs.lastSyncStatus, Toast.LENGTH_LONG).show()
             }
         }
     }

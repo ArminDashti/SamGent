@@ -21,11 +21,11 @@ class SyncWorker(appContext: Context, params: WorkerParameters) : CoroutineWorke
                     "OK sms=${res.optInt("smsInserted")} calls=${res.optInt("callsInserted")} " +
                         "gps=${res.optInt("gpsInserted")} bat=${res.optInt("batteryInserted")} · ${System.currentTimeMillis()}"
             }
+            // Schedule next only after success — REPLACE + Result.retry() cancels the retry.
             scheduleNext(applicationContext, prefs)
             Result.success()
         } catch (e: Exception) {
             prefs.lastSyncStatus = "FAIL ${e.message}"
-            scheduleNext(applicationContext, prefs)
             Result.retry()
         }
     }
