@@ -18,9 +18,9 @@
     "semantic_hash": ""
   },
   "android-app/app/src/main/java/com/samgent/app/MainActivity.kt": {
-    "mtime": 1794720517.0946367,
-    "seen": 1794721006.210351,
-    "ast_hash": "161bbc7540f0184dbdf8eff45fced629",
+    "mtime": 1794824562.1153555,
+    "seen": 1794824662.9023445,
+    "ast_hash": "b8b2c88558d74e00f412c911f700ae94",
     "semantic_hash": ""
   },
   "android-app/app/src/main/java/com/samgent/app/Prefs.kt": {
@@ -30,15 +30,15 @@
     "semantic_hash": ""
   },
   "android-app/app/src/main/java/com/samgent/app/SmsReceiver.kt": {
-    "mtime": 1794720519.995784,
-    "seen": 1794721006.2103543,
-    "ast_hash": "4d516515d1b0049d74b40062f0cfd08f",
+    "mtime": 1794824543.0579288,
+    "seen": 1794824662.902349,
+    "ast_hash": "fd8595a16f7cfe307dd7f1830c4affde",
     "semantic_hash": ""
   },
   "android-app/app/src/main/java/com/samgent/app/SyncWorker.kt": {
-    "mtime": 1794720466.9658575,
-    "seen": 1794721006.2103572,
-    "ast_hash": "20c1746db42c940dbc62ec77f5fa4f8b",
+    "mtime": 1794824554.326399,
+    "seen": 1794824662.9023526,
+    "ast_hash": "b10559443febcb4164ab918e2ec26903",
     "semantic_hash": ""
   },
   "android-app/build.gradle.kts": {
@@ -276,9 +276,9 @@
     "semantic_hash": ""
   },
   "android-app/app/src/main/java/com/samgent/app/SyncEngine.kt": {
-    "mtime": 1794720460.9430957,
-    "seen": 1794721006.2103558,
-    "ast_hash": "ed826eda93131fca542e2d78f008aafa",
+    "mtime": 1794824551.1666791,
+    "seen": 1794824662.902351,
+    "ast_hash": "2265dbdadfdc631bd02f6ecc854e6b05",
     "semantic_hash": ""
   },
   "android-app/app/src/main/java/com/samgent/app/TelemetryCollectors.kt": {
@@ -300,9 +300,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1794663160.051779,
-    "seen": 1794721006.210424,
-    "ast_hash": "abcdbd5a91291ef999259f57c443a53d",
+    "mtime": 1794721083.7360773,
+    "seen": 1794824662.9024215,
+    "ast_hash": "99176d7236d4c337c583c4c7c57cf853",
     "semantic_hash": ""
   }
 }

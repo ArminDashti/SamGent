@@ -20,5 +20,7 @@
   "18": "gradlew",
   "19": "WifiReceiver.kt",
   "20": "Export APK after every change",
-  "21": "IntervalConfig.kt"
+  "21": "IntervalConfig.kt",
+  "22": "SmsReceiver.kt",
+  "23": "dependencies"
 }
