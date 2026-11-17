@@ -74,8 +74,19 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify(body),
     }),
-  telemetry: (params?: { deviceId?: string; kind?: string }) => {
+  summary: (params?: { deviceId?: string }) => {
     const q = new URLSearchParams()
+    if (params?.deviceId) q.set('deviceId', params.deviceId)
+    const s = q.toString()
+    return request<{
+      sms: number
+      calls: number
+      telemetry: Record<string, number>
+    }>(`/v1/summary${s ? `?${s}` : ''}`)
+  },
+  telemetry: (params?: { deviceId?: string; kind?: string; limit?: number }) => {
+    const q = new URLSearchParams()
+    q.set('limit', String(params?.limit ?? 500))
     if (params?.deviceId) q.set('deviceId', params.deviceId)
     if (params?.kind) q.set('kind', params.kind)
     const s = q.toString()
@@ -90,8 +101,9 @@ export const api = {
       }>
     >(`/v1/telemetry${s ? `?${s}` : ''}`)
   },
-  sms: (params?: { deviceId?: string; q?: string }) => {
+  sms: (params?: { deviceId?: string; q?: string; limit?: number }) => {
     const q = new URLSearchParams()
+    q.set('limit', String(params?.limit ?? 500))
     if (params?.deviceId) q.set('deviceId', params.deviceId)
     if (params?.q) q.set('q', params.q)
     const s = q.toString()
@@ -107,8 +119,9 @@ export const api = {
       }>
     >(`/v1/sms${s ? `?${s}` : ''}`)
   },
-  calls: (params?: { deviceId?: string; q?: string }) => {
+  calls: (params?: { deviceId?: string; q?: string; limit?: number }) => {
     const q = new URLSearchParams()
+    q.set('limit', String(params?.limit ?? 500))
     if (params?.deviceId) q.set('deviceId', params.deviceId)
     if (params?.q) q.set('q', params.q)
     const s = q.toString()
