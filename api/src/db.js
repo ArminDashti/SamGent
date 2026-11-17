@@ -112,6 +112,11 @@ function migrate(db) {
     CREATE INDEX IF NOT EXISTS idx_telemetry_lookup ON device_telemetry(device_id, kind, recorded_at DESC);
   `)
 
+  const deviceCols = db.prepare(`PRAGMA table_info(devices)`).all().map((c) => c.name)
+  if (!deviceCols.includes('os_version')) {
+    db.exec(`ALTER TABLE devices ADD COLUMN os_version TEXT`)
+  }
+
   const devices = db.prepare('SELECT id FROM devices').all()
   for (const d of devices) {
     ensureDeviceIntervals(db, d.id)

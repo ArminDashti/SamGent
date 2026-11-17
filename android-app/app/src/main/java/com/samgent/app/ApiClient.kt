@@ -1,5 +1,6 @@
 package com.samgent.app
 
+import android.os.Build
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -63,6 +64,10 @@ class ApiClient(private val prefs: Prefs) {
     ): JSONObject {
         val key = prefs.apiKey ?: error("not_configured")
         val body = JSONObject()
+            .put(
+                "deviceInfo",
+                JSONObject().put("osVersion", "Android ${Build.VERSION.RELEASE}"),
+            )
             .put("sms", sms)
             .put("calls", calls)
             .put("gps", gps)
