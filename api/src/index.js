@@ -310,6 +310,25 @@ app.post('/v1/ingest', async (request, reply) => {
   }
 })
 
+app.get('/v1/summary', { preHandler: [app.authenticate] }, async (request) => {
+  const { deviceId } = request.query || {}
+  const id = deviceId ? Number(deviceId) : null
+  const devClause = id != null && Number.isInteger(id) && id > 0 ? ' AND device_id = ?' : ''
+  const devParams = devClause ? [id] : []
+
+  const sms =
+    db.prepare(`SELECT COUNT(*) AS n FROM sms_messages WHERE 1=1${devClause}`).get(...devParams)?.n ?? 0
+  const calls =
+    db.prepare(`SELECT COUNT(*) AS n FROM call_logs WHERE 1=1${devClause}`).get(...devParams)?.n ?? 0
+  const telemetryRows = db
+    .prepare(
+      `SELECT kind, COUNT(*) AS n FROM device_telemetry WHERE 1=1${devClause} GROUP BY kind ORDER BY kind`,
+    )
+    .all(...devParams)
+  const telemetry = Object.fromEntries(telemetryRows.map((r) => [r.kind, Number(r.n)]))
+  return { sms: Number(sms), calls: Number(calls), telemetry }
+})
+
 app.get('/v1/telemetry', { preHandler: [app.authenticate] }, async (request) => {
   const { deviceId, kind, limit = '100' } = request.query || {}
   const lim = Math.min(Number(limit) || 100, 500)

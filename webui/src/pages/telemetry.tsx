@@ -1,10 +1,12 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { api } from '@/lib/api'
 
 type Row = Awaited<ReturnType<typeof api.telemetry>>[number]
 type Device = Awaited<ReturnType<typeof api.devices>>[number]
+type Summary = Awaited<ReturnType<typeof api.summary>>
 
 const KINDS = [
   '',
@@ -16,20 +18,35 @@ const KINDS = [
   'public_ip',
 ]
 
+const TELEMETRY_LABELS: Record<string, string> = {
+  gps: 'GPS',
+  network_signal: 'Network signal',
+  network_type: 'Network type',
+  battery: 'Battery',
+  wifi: 'Wi‑Fi',
+  public_ip: 'Public IP',
+}
+
 export function TelemetryPage() {
   const [devices, setDevices] = useState<Device[]>([])
   const [deviceId, setDeviceId] = useState('')
   const [kind, setKind] = useState('')
   const [rows, setRows] = useState<Row[]>([])
+  const [summary, setSummary] = useState<Summary | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   function load(nextDeviceId = deviceId, nextKind = kind) {
-    api
-      .telemetry({
+    Promise.all([
+      api.telemetry({
         deviceId: nextDeviceId || undefined,
         kind: nextKind || undefined,
+      }),
+      api.summary({ deviceId: nextDeviceId || undefined }),
+    ])
+      .then(([telemetryRows, summaryRows]) => {
+        setRows(telemetryRows)
+        setSummary(summaryRows)
       })
-      .then(setRows)
       .catch((e) => setError(e instanceof Error ? e.message : 'failed'))
   }
 
@@ -46,9 +63,61 @@ export function TelemetryPage() {
     load()
   }
 
+  function pickKind(nextKind: string) {
+    setKind(nextKind)
+    load(deviceId, nextKind)
+  }
+
+  const telemetryCounts = summary?.telemetry ?? {}
+  const listedTotal =
+    (summary?.sms ?? 0) +
+    (summary?.calls ?? 0) +
+    Object.values(telemetryCounts).reduce((a, b) => a + b, 0)
+
   return (
     <div className="space-y-4">
       <h1 className="font-mono text-2xl font-semibold">Telemetry</h1>
+      <p className="text-sm text-muted-foreground">
+        Phones upload eight channels: SMS and call logs have their own pages; the six sensor streams below
+        appear here. Samples list shows up to 500 newest rows (use Kind filter so high‑frequency Wi‑Fi does
+        not hide GPS or public IP).
+      </p>
+      {summary ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Stored on server ({listedTotal.toLocaleString()} rows)</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            <Link
+              to="/sms"
+              className="rounded-lg border border-border/70 bg-muted/40 px-3 py-2 text-sm hover:bg-muted"
+            >
+              <span className="font-medium">SMS</span>
+              <span className="ml-2 font-mono text-muted-foreground">{summary.sms.toLocaleString()}</span>
+            </Link>
+            <Link
+              to="/calls"
+              className="rounded-lg border border-border/70 bg-muted/40 px-3 py-2 text-sm hover:bg-muted"
+            >
+              <span className="font-medium">Calls</span>
+              <span className="ml-2 font-mono text-muted-foreground">{summary.calls.toLocaleString()}</span>
+            </Link>
+            {Object.keys(TELEMETRY_LABELS).map((k) => (
+              <button
+                key={k}
+                type="button"
+                className="rounded-lg border border-border/70 bg-muted/40 px-3 py-2 text-left text-sm hover:bg-muted"
+                onClick={() => pickKind(k)}
+              >
+                <span className="font-medium">{TELEMETRY_LABELS[k]}</span>
+                <span className="ml-2 font-mono text-muted-foreground">
+                  {(telemetryCounts[k] ?? 0).toLocaleString()}
+                </span>
+              </button>
+            ))}
+          </CardContent>
+        </Card>
+      ) : null}
       <form onSubmit={onFilter} className="flex flex-col gap-2 sm:flex-row">
         <select
           aria-label="Device"
@@ -71,7 +140,7 @@ export function TelemetryPage() {
         >
           {KINDS.map((k) => (
             <option key={k || 'all'} value={k}>
-              {k || 'All kinds'}
+              {k ? TELEMETRY_LABELS[k] ?? k : 'All kinds'}
             </option>
           ))}
         </select>
@@ -80,7 +149,10 @@ export function TelemetryPage() {
       {error ? <p className="text-destructive">{error}</p> : null}
       <Card>
         <CardHeader>
-          <CardTitle>Samples</CardTitle>
+          <CardTitle>
+            Samples ({rows.length}
+            {rows.length >= 500 ? ', cap reached' : ''})
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {rows.length === 0 ? (
