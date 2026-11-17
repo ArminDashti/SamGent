@@ -19,7 +19,7 @@ export function LoginPage() {
     try {
       const res = await api.login(username, password)
       setToken(res.token)
-      navigate('/devices')
+      navigate('/dashboard')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'login_failed')
     } finally {
@@ -28,11 +28,11 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <Card className="w-full max-w-md">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <Card className="w-full max-w-md border-border bg-card">
         <CardHeader>
-          <p className="font-mono text-sm uppercase tracking-widest text-muted-foreground">Operator console</p>
-          <CardTitle className="text-3xl">SamGent</CardTitle>
+          <CardTitle className="font-mono text-2xl">SamGent</CardTitle>
+          <p className="text-sm text-muted-foreground">Sign in to the operator console.</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">

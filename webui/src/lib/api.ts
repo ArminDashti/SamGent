@@ -56,7 +56,14 @@ export const api = {
     }),
   devices: () =>
     request<
-      Array<{ id: number; deviceUid: string; label: string; lastSeenAt: string | null; createdAt: string }>
+      Array<{
+        id: number
+        deviceUid: string
+        label: string
+        osVersion: string | null
+        lastSeenAt: string | null
+        createdAt: string
+      }>
     >('/v1/devices'),
   createDevice: (label: string) =>
     request<{ id: number; deviceUid: string; label: string; apiKey: string }>('/v1/devices', {
@@ -74,9 +81,11 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify(body),
     }),
-  summary: (params?: { deviceId?: string }) => {
+  summary: (params?: { deviceId?: string; from?: string; to?: string }) => {
     const q = new URLSearchParams()
     if (params?.deviceId) q.set('deviceId', params.deviceId)
+    if (params?.from) q.set('from', params.from)
+    if (params?.to) q.set('to', params.to)
     const s = q.toString()
     return request<{
       sms: number
@@ -84,11 +93,19 @@ export const api = {
       telemetry: Record<string, number>
     }>(`/v1/summary${s ? `?${s}` : ''}`)
   },
-  telemetry: (params?: { deviceId?: string; kind?: string; limit?: number }) => {
+  telemetry: (params?: {
+    deviceId?: string
+    kind?: string
+    from?: string
+    to?: string
+    limit?: number
+  }) => {
     const q = new URLSearchParams()
     q.set('limit', String(params?.limit ?? 500))
     if (params?.deviceId) q.set('deviceId', params.deviceId)
     if (params?.kind) q.set('kind', params.kind)
+    if (params?.from) q.set('from', params.from)
+    if (params?.to) q.set('to', params.to)
     const s = q.toString()
     return request<
       Array<{
@@ -119,6 +136,24 @@ export const api = {
       }>
     >(`/v1/sms${s ? `?${s}` : ''}`)
   },
+  smsContacts: (params?: { deviceId?: string; from?: string; to?: string; q?: string; limit?: number }) => {
+    const q = new URLSearchParams()
+    q.set('limit', String(params?.limit ?? 200))
+    if (params?.deviceId) q.set('deviceId', params.deviceId)
+    if (params?.from) q.set('from', params.from)
+    if (params?.to) q.set('to', params.to)
+    if (params?.q) q.set('q', params.q)
+    const s = q.toString()
+    return request<
+      Array<{
+        contact: string
+        phone: string
+        sent: number
+        receive: number
+        updatedAt: string
+      }>
+    >(`/v1/sms/contacts${s ? `?${s}` : ''}`)
+  },
   calls: (params?: { deviceId?: string; q?: string; limit?: number }) => {
     const q = new URLSearchParams()
     q.set('limit', String(params?.limit ?? 500))
@@ -137,6 +172,25 @@ export const api = {
         calledAt: string
       }>
     >(`/v1/calls${s ? `?${s}` : ''}`)
+  },
+  callContacts: (params?: { deviceId?: string; from?: string; to?: string; q?: string; limit?: number }) => {
+    const q = new URLSearchParams()
+    q.set('limit', String(params?.limit ?? 200))
+    if (params?.deviceId) q.set('deviceId', params.deviceId)
+    if (params?.from) q.set('from', params.from)
+    if (params?.to) q.set('to', params.to)
+    if (params?.q) q.set('q', params.q)
+    const s = q.toString()
+    return request<
+      Array<{
+        contact: string
+        number: string
+        sent: number
+        receive: number
+        totalDurationSec: number
+        updatedAt: string
+      }>
+    >(`/v1/calls/contacts${s ? `?${s}` : ''}`)
   },
   entities: (params?: { type?: string; q?: string }) => {
     const q = new URLSearchParams()

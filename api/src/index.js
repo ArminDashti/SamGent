@@ -70,6 +70,17 @@ function applyIntervalPut(deviceId, body, updatedBy, reply) {
   return putIntervals(db, deviceId, parsed.intervals, updatedBy)
 }
 
+function appendIsoRange(clauses, params, column, from, to) {
+  if (from && typeof from === 'string') {
+    clauses.push(` AND ${column} >= ?`)
+    params.push(from)
+  }
+  if (to && typeof to === 'string') {
+    clauses.push(` AND ${column} < ?`)
+    params.push(to)
+  }
+}
+
 function insertTelemetryRows(deviceId, kind, items) {
   if (!Array.isArray(items) || items.length === 0) return 0
   const insert = db.prepare(
@@ -102,7 +113,8 @@ app.post('/v1/auth/login', async (request, reply) => {
 app.get('/v1/devices', { preHandler: [app.authenticate] }, async () => {
   return db
     .prepare(
-      `SELECT id, device_uid AS deviceUid, label, last_seen_at AS lastSeenAt, created_at AS createdAt FROM devices ORDER BY id DESC`,
+      `SELECT id, device_uid AS deviceUid, label, os_version AS osVersion,
+              last_seen_at AS lastSeenAt, created_at AS createdAt FROM devices ORDER BY id DESC`,
     )
     .all()
 })
@@ -236,6 +248,11 @@ app.post('/v1/ingest', async (request, reply) => {
   let wifiInserted = 0
   let publicIpInserted = 0
 
+  const osVersion = body?.deviceInfo?.osVersion
+  if (osVersion && typeof osVersion === 'string' && osVersion.trim()) {
+    db.prepare(`UPDATE devices SET os_version = ? WHERE id = ?`).run(osVersion.trim(), device.id)
+  }
+
   const tx = db.transaction(() => {
     touch.run(device.id)
     for (const item of sms) {
@@ -311,26 +328,41 @@ app.post('/v1/ingest', async (request, reply) => {
 })
 
 app.get('/v1/summary', { preHandler: [app.authenticate] }, async (request) => {
-  const { deviceId } = request.query || {}
+  const { deviceId, from, to } = request.query || {}
   const id = deviceId ? Number(deviceId) : null
-  const devClause = id != null && Number.isInteger(id) && id > 0 ? ' AND device_id = ?' : ''
-  const devParams = devClause ? [id] : []
+  const clauses = []
+  const params = []
+  if (id != null && Number.isInteger(id) && id > 0) {
+    clauses.push(' AND device_id = ?')
+    params.push(id)
+  }
 
+  const smsClauses = [...clauses]
+  const smsParams = [...params]
+  appendIsoRange(smsClauses, smsParams, 'received_at', from, to)
   const sms =
-    db.prepare(`SELECT COUNT(*) AS n FROM sms_messages WHERE 1=1${devClause}`).get(...devParams)?.n ?? 0
+    db.prepare(`SELECT COUNT(*) AS n FROM sms_messages WHERE 1=1${smsClauses.join('')}`).get(...smsParams)?.n ?? 0
+
+  const callClauses = [...clauses]
+  const callParams = [...params]
+  appendIsoRange(callClauses, callParams, 'called_at', from, to)
   const calls =
-    db.prepare(`SELECT COUNT(*) AS n FROM call_logs WHERE 1=1${devClause}`).get(...devParams)?.n ?? 0
+    db.prepare(`SELECT COUNT(*) AS n FROM call_logs WHERE 1=1${callClauses.join('')}`).get(...callParams)?.n ?? 0
+
+  const telClauses = [...clauses]
+  const telParams = [...params]
+  appendIsoRange(telClauses, telParams, 'recorded_at', from, to)
   const telemetryRows = db
     .prepare(
-      `SELECT kind, COUNT(*) AS n FROM device_telemetry WHERE 1=1${devClause} GROUP BY kind ORDER BY kind`,
+      `SELECT kind, COUNT(*) AS n FROM device_telemetry WHERE 1=1${telClauses.join('')} GROUP BY kind ORDER BY kind`,
     )
-    .all(...devParams)
+    .all(...telParams)
   const telemetry = Object.fromEntries(telemetryRows.map((r) => [r.kind, Number(r.n)]))
   return { sms: Number(sms), calls: Number(calls), telemetry }
 })
 
 app.get('/v1/telemetry', { preHandler: [app.authenticate] }, async (request) => {
-  const { deviceId, kind, limit = '100' } = request.query || {}
+  const { deviceId, kind, from, to, limit = '100' } = request.query || {}
   const lim = Math.min(Number(limit) || 100, 500)
   let sql = `
     SELECT t.id, t.device_id AS deviceId, d.label AS deviceLabel, t.kind,
@@ -347,6 +379,9 @@ app.get('/v1/telemetry', { preHandler: [app.authenticate] }, async (request) => 
     sql += ' AND t.kind = ?'
     params.push(String(kind))
   }
+  const rangeClauses = []
+  appendIsoRange(rangeClauses, params, 't.recorded_at', from, to)
+  sql += rangeClauses.join('')
   sql += ' ORDER BY t.recorded_at DESC LIMIT ?'
   params.push(lim)
   return db.prepare(sql).all(...params).map((row) => {
@@ -411,6 +446,76 @@ app.get('/v1/calls', { preHandler: [app.authenticate] }, async (request) => {
   sql += ' ORDER BY c.called_at DESC LIMIT ?'
   params.push(lim)
   return db.prepare(sql).all(...params)
+})
+
+app.get('/v1/sms/contacts', { preHandler: [app.authenticate] }, async (request) => {
+  const { deviceId, from, to, q, limit = '200' } = request.query || {}
+  const lim = Math.min(Number(limit) || 200, 500)
+  let sql = `
+    SELECT address AS phone,
+           address AS contact,
+           SUM(CASE WHEN direction = 'sent' THEN 1 ELSE 0 END) AS sent,
+           SUM(CASE WHEN direction != 'sent' THEN 1 ELSE 0 END) AS receive,
+           MAX(received_at) AS updatedAt
+    FROM sms_messages
+  WHERE 1=1`
+  const params = []
+  if (deviceId) {
+    sql += ' AND device_id = ?'
+    params.push(Number(deviceId))
+  }
+  if (q) {
+    sql += ' AND address LIKE ?'
+    params.push(`%${q}%`)
+  }
+  const rangeClauses = []
+  appendIsoRange(rangeClauses, params, 'received_at', from, to)
+  sql += rangeClauses.join('')
+  sql += ' GROUP BY address ORDER BY updatedAt DESC LIMIT ?'
+  params.push(lim)
+  return db.prepare(sql).all(...params).map((r) => ({
+    contact: r.contact || 'Unknown',
+    phone: r.phone,
+    sent: Number(r.sent),
+    receive: Number(r.receive),
+    updatedAt: r.updatedAt,
+  }))
+})
+
+app.get('/v1/calls/contacts', { preHandler: [app.authenticate] }, async (request) => {
+  const { deviceId, from, to, q, limit = '200' } = request.query || {}
+  const lim = Math.min(Number(limit) || 200, 500)
+  let sql = `
+    SELECT number,
+           MAX(name) AS contact,
+           SUM(CASE WHEN type = 'outgoing' THEN 1 ELSE 0 END) AS sent,
+           SUM(CASE WHEN type IN ('incoming', 'missed') THEN 1 ELSE 0 END) AS receive,
+           SUM(duration_sec) AS totalDurationSec,
+           MAX(called_at) AS updatedAt
+    FROM call_logs
+    WHERE 1=1`
+  const params = []
+  if (deviceId) {
+    sql += ' AND device_id = ?'
+    params.push(Number(deviceId))
+  }
+  if (q) {
+    sql += ' AND (number LIKE ? OR IFNULL(name, "") LIKE ?)'
+    params.push(`%${q}%`, `%${q}%`)
+  }
+  const rangeClauses = []
+  appendIsoRange(rangeClauses, params, 'called_at', from, to)
+  sql += rangeClauses.join('')
+  sql += ' GROUP BY number ORDER BY updatedAt DESC LIMIT ?'
+  params.push(lim)
+  return db.prepare(sql).all(...params).map((r) => ({
+    contact: r.contact || '—',
+    number: r.number,
+    sent: Number(r.sent),
+    receive: Number(r.receive),
+    totalDurationSec: Number(r.totalDurationSec),
+    updatedAt: r.updatedAt,
+  }))
 })
 
 app.get('/v1/entities', { preHandler: [app.authenticate] }, async (request) => {
