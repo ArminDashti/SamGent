@@ -15,6 +15,7 @@ export function DevicesPage() {
   const [busy, setBusy] = useState(false)
   const [editId, setEditId] = useState<number | null>(null)
   const [intervals, setIntervals] = useState<DeviceIntervals | null>(null)
+  const [issuedKey, setIssuedKey] = useState<string | null>(null)
 
   async function reload() {
     const list = await api.devices()
@@ -29,7 +30,8 @@ export function DevicesPage() {
     setBusy(true)
     setError(null)
     try {
-      await api.rotateDevice(id)
+      const res = await api.rotateDevice(id)
+      setIssuedKey(res.apiKey)
       await reload()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'rotate_failed')
@@ -75,6 +77,27 @@ export function DevicesPage() {
     <div>
       <PageHeader title="Devices" description="Enrolled phones and last sync from the field." />
       {error ? <p className="mb-4 text-sm text-destructive">{error}</p> : null}
+
+      {issuedKey ? (
+        <Card className="mb-4">
+          <CardHeader>
+            <CardTitle>Rotated API key — copy now</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <p className="break-all rounded-md border border-border bg-muted/40 p-3 font-mono text-sm">
+              {issuedKey}
+            </p>
+            <div className="flex gap-2">
+              <Button type="button" onClick={() => navigator.clipboard.writeText(issuedKey)}>
+                Copy API key
+              </Button>
+              <Button type="button" variant="outline" onClick={() => setIssuedKey(null)}>
+                Dismiss
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
 
       <DataTable
         rows={rows}
