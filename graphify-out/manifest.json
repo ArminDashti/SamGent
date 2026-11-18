@@ -6,9 +6,9 @@
     "semantic_hash": ""
   },
   "android-app/app/src/main/java/com/samgent/app/ApiClient.kt": {
-    "mtime": 1794720445.089848,
-    "seen": 1794721006.2103384,
-    "ast_hash": "81383e40a17cb8cdc875aeb5a08b4749",
+    "mtime": 1794906667.8260581,
+    "seen": 1794906697.757018,
+    "ast_hash": "1a79d38b0a898a6d8f86e787c51d34ab",
     "semantic_hash": ""
   },
   "android-app/app/src/main/java/com/samgent/app/Collectors.kt": {
@@ -18,9 +18,9 @@
     "semantic_hash": ""
   },
   "android-app/app/src/main/java/com/samgent/app/MainActivity.kt": {
-    "mtime": 1794824562.1153555,
-    "seen": 1794824662.9023445,
-    "ast_hash": "b8b2c88558d74e00f412c911f700ae94",
+    "mtime": 1794837563.703016,
+    "seen": 1794891977.6544366,
+    "ast_hash": "f3be17ad650cd6e0888a474773aea993",
     "semantic_hash": ""
   },
   "android-app/app/src/main/java/com/samgent/app/Prefs.kt": {
@@ -30,15 +30,15 @@
     "semantic_hash": ""
   },
   "android-app/app/src/main/java/com/samgent/app/SmsReceiver.kt": {
-    "mtime": 1794824543.0579288,
-    "seen": 1794824662.902349,
-    "ast_hash": "fd8595a16f7cfe307dd7f1830c4affde",
+    "mtime": 1794824750.3748593,
+    "seen": 1794891977.654443,
+    "ast_hash": "7fc5753fffc19d2d10b3a4df385c8e20",
     "semantic_hash": ""
   },
   "android-app/app/src/main/java/com/samgent/app/SyncWorker.kt": {
-    "mtime": 1794824554.326399,
-    "seen": 1794824662.9023526,
-    "ast_hash": "b10559443febcb4164ab918e2ec26903",
+    "mtime": 1794837563.7121513,
+    "seen": 1794891977.6544466,
+    "ast_hash": "c51f775d2f7fabdd8134e7cc54ff1cf2",
     "semantic_hash": ""
   },
   "android-app/build.gradle.kts": {
@@ -66,15 +66,15 @@
     "semantic_hash": ""
   },
   "api/src/db.js": {
-    "mtime": 1794720331.799574,
-    "seen": 1794721006.2103727,
-    "ast_hash": "3c97babf829212a954a9957cc21e00db",
+    "mtime": 1794906587.0476549,
+    "seen": 1794906697.7570426,
+    "ast_hash": "0f18ba8880286d33781332e40e8f98c4",
     "semantic_hash": ""
   },
   "api/src/index.js": {
-    "mtime": 1794720382.2659035,
-    "seen": 1794721006.2103744,
-    "ast_hash": "5eb750adc31408caf7a714f1d3fef730",
+    "mtime": 1794906601.1645205,
+    "seen": 1794906697.7570436,
+    "ast_hash": "b0e1aed5c8e60030c66f3ca2dd054a4d",
     "semantic_hash": ""
   },
   "api/src/parsers/sms.js": {
@@ -102,15 +102,15 @@
     "semantic_hash": ""
   },
   "webui/src/App.tsx": {
-    "mtime": 1794720606.9316683,
-    "seen": 1794721006.2103848,
-    "ast_hash": "d9155cc08020f4c503e9257e3dc4f1d0",
+    "mtime": 1794906664.5686414,
+    "seen": 1794906697.757049,
+    "ast_hash": "7f25538ca898423d8953fcba7193edde",
     "semantic_hash": ""
   },
   "webui/src/components/layout.tsx": {
-    "mtime": 1794720606.9271502,
-    "seen": 1794721006.2103868,
-    "ast_hash": "8532e4f95074d1cf58d4cdaa3c40534c",
+    "mtime": 1794906629.0823455,
+    "seen": 1794906697.757053,
+    "ast_hash": "d6b219e8e1c375090ea9bfb9a3bcba75",
     "semantic_hash": ""
   },
   "webui/src/components/ui/button.tsx": {
@@ -132,9 +132,9 @@
     "semantic_hash": ""
   },
   "webui/src/lib/api.ts": {
-    "mtime": 1794720547.9643843,
-    "seen": 1794721006.2103949,
-    "ast_hash": "bc0c60475683966bfff21c64dc1d796f",
+    "mtime": 1794906643.197188,
+    "seen": 1794906697.7570605,
+    "ast_hash": "32f1f565aa2b3bc3b8b9465809a24925",
     "semantic_hash": ""
   },
   "webui/src/lib/utils.ts": {
@@ -150,15 +150,15 @@
     "semantic_hash": ""
   },
   "webui/src/pages/calls.tsx": {
-    "mtime": 1794378770.8134677,
-    "seen": 1794379279.625963,
-    "ast_hash": "c5e74b3c4480978a843dc6249e8a0b3d",
+    "mtime": 1794906654.7387116,
+    "seen": 1794906697.757066,
+    "ast_hash": "b7196663b4c030f25ecf12d598ca35f3",
     "semantic_hash": ""
   },
   "webui/src/pages/devices.tsx": {
-    "mtime": 1794720587.4471843,
-    "seen": 1794721006.2104034,
-    "ast_hash": "976ac163157fcad1baaab7d69210c4e4",
+    "mtime": 1794906651.9293237,
+    "seen": 1794906697.7570677,
+    "ast_hash": "c55197c3c1e3ebe9487f633076207dca",
     "semantic_hash": ""
   },
   "webui/src/pages/entities.tsx": {
@@ -168,9 +168,9 @@
     "semantic_hash": ""
   },
   "webui/src/pages/login.tsx": {
-    "mtime": 1794378770.6700306,
-    "seen": 1794379279.6259656,
-    "ast_hash": "9404275c636bb065167a45fa6c28e7b2",
+    "mtime": 1794906666.2934184,
+    "seen": 1794906697.7570698,
+    "ast_hash": "655f631803c48e63e3a31ccef107ff69",
     "semantic_hash": ""
   },
   "webui/src/pages/search.tsx": {
@@ -180,9 +180,9 @@
     "semantic_hash": ""
   },
   "webui/src/pages/sms.tsx": {
-    "mtime": 1794378770.7676704,
-    "seen": 1794379279.625967,
-    "ast_hash": "1ebe88880190ccd69e04f5acfb284880",
+    "mtime": 1794906653.2153058,
+    "seen": 1794906697.7570727,
+    "ast_hash": "fcb80b209361c5d2ae469985c7e6a80a",
     "semantic_hash": ""
   },
   "webui/tsconfig.app.json": {
@@ -240,9 +240,9 @@
     "semantic_hash": ""
   },
   "webui/index.html": {
-    "mtime": 1794378781.8252258,
-    "seen": 1794379279.6259758,
-    "ast_hash": "b8db94b16b00adf359e4c3f31530ec78",
+    "mtime": 1794906586.6409314,
+    "seen": 1794906697.757087,
+    "ast_hash": "fa52ddaf480909f4172bed45ecb59916",
     "semantic_hash": ""
   },
   "webui/public/favicon.svg": {
@@ -264,9 +264,9 @@
     "semantic_hash": ""
   },
   "android-app/app/src/main/java/com/samgent/app/BootReceiver.kt": {
-    "mtime": 1794720475.4999633,
-    "seen": 1794721006.210342,
-    "ast_hash": "fd1c7273793594ab3af84266b0a6be88",
+    "mtime": 1794837563.7012258,
+    "seen": 1794891977.6544294,
+    "ast_hash": "a05020b765711e37c4a7a479d1494538",
     "semantic_hash": ""
   },
   "android-app/app/src/main/java/com/samgent/app/IntervalConfig.kt": {
@@ -276,9 +276,9 @@
     "semantic_hash": ""
   },
   "android-app/app/src/main/java/com/samgent/app/SyncEngine.kt": {
-    "mtime": 1794824551.1666791,
-    "seen": 1794824662.902351,
-    "ast_hash": "2265dbdadfdc631bd02f6ecc854e6b05",
+    "mtime": 1794824750.3763647,
+    "seen": 1794891977.6544447,
+    "ast_hash": "30f26979763a732504974fec86bc399d",
     "semantic_hash": ""
   },
   "android-app/app/src/main/java/com/samgent/app/TelemetryCollectors.kt": {
@@ -287,22 +287,88 @@
     "ast_hash": "2c938c82ef0fa5f6d6f620b050079d32",
     "semantic_hash": ""
   },
-  "android-app/app/src/main/java/com/samgent/app/WifiReceiver.kt": {
-    "mtime": 1794720474.4433632,
-    "seen": 1794721006.2103603,
-    "ast_hash": "883308661cc131724a039ebdc876984a",
-    "semantic_hash": ""
-  },
-  "webui/src/pages/telemetry.tsx": {
-    "mtime": 1794720570.2496111,
-    "seen": 1794721006.2104132,
-    "ast_hash": "f9218e30c72a66bf4ef2b57620e2dd80",
-    "semantic_hash": ""
-  },
   "AGENTS.md": {
     "mtime": 1794721083.7360773,
     "seen": 1794824662.9024215,
     "ast_hash": "99176d7236d4c337c583c4c7c57cf853",
+    "semantic_hash": ""
+  },
+  "android-app/app/src/main/java/com/samgent/app/SamGentApp.kt": {
+    "mtime": 1794837563.704648,
+    "seen": 1794891977.6544409,
+    "ast_hash": "62ea2ec7b3b47a6d72ae615663a14c33",
+    "semantic_hash": ""
+  },
+  "android-app/app/src/main/java/com/samgent/app/WifiMonitor.kt": {
+    "mtime": 1794837563.7166476,
+    "seen": 1794891977.6544507,
+    "ast_hash": "470d479b33d92a096621020175606e7f",
+    "semantic_hash": ""
+  },
+  "webui/src/components/app-shell.tsx": {
+    "mtime": 1794906628.0698318,
+    "seen": 1794906697.7570505,
+    "ast_hash": "3db3edd001c2c17b9e808d9dc4da67a6",
+    "semantic_hash": ""
+  },
+  "webui/src/components/data-table.tsx": {
+    "mtime": 1794906610.8168788,
+    "seen": 1794906697.757052,
+    "ast_hash": "ede40a27e6dda136a9e2a3013537d369",
+    "semantic_hash": ""
+  },
+  "webui/src/components/page-header.tsx": {
+    "mtime": 1794906610.675519,
+    "seen": 1794906697.757054,
+    "ast_hash": "837f85970fd2ac6b16b4ed3c983aa879",
+    "semantic_hash": ""
+  },
+  "webui/src/components/sidebar-nav.tsx": {
+    "mtime": 1794906625.1350424,
+    "seen": 1794906697.757055,
+    "ast_hash": "0c1dbaa47cebcdf37180818ffcbcd9da",
+    "semantic_hash": ""
+  },
+  "webui/src/components/time-range-bar.tsx": {
+    "mtime": 1794906609.828081,
+    "seen": 1794906697.757056,
+    "ast_hash": "70a8854f80881b2d5795061b00dff237",
+    "semantic_hash": ""
+  },
+  "webui/src/lib/telemetry-kinds.ts": {
+    "mtime": 1794906611.7586043,
+    "seen": 1794906697.757062,
+    "ast_hash": "945b961ede9cc88eab3c6f3185035bdc",
+    "semantic_hash": ""
+  },
+  "webui/src/lib/time-ranges.ts": {
+    "mtime": 1794906590.745548,
+    "seen": 1794906697.7570627,
+    "ast_hash": "1c85d40f9cf7e1db5c84f73652836153",
+    "semantic_hash": ""
+  },
+  "webui/src/pages/dashboard.tsx": {
+    "mtime": 1794906648.147383,
+    "seen": 1794906697.7570667,
+    "ast_hash": "cf210ae1aea3a7a93b17e6a38affc832",
+    "semantic_hash": ""
+  },
+  "webui/src/pages/settings.tsx": {
+    "mtime": 1794906673.1240182,
+    "seen": 1794906697.7570717,
+    "ast_hash": "43ed6217f34ba5db95a915c98d859c0d",
+    "semantic_hash": ""
+  },
+  "webui/src/pages/telemetry/telemetry-kind.tsx": {
+    "mtime": 1794906663.0541842,
+    "seen": 1794906697.7570734,
+    "ast_hash": "0949b20c209078680397fab458247ef4",
+    "semantic_hash": ""
+  },
+  "webui/src/pages/telemetry/telemetry-layout.tsx": {
+    "mtime": 1794906661.3315148,
+    "seen": 1794906697.757074,
+    "ast_hash": "92205105eeb843d8700449c8fdbdf7e7",
     "semantic_hash": ""
   }
 }

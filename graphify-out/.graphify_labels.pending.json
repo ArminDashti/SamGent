@@ -4,11 +4,10 @@
   "2": "webui/package.json",
   "3": "TelemetryCollectors.kt",
   "4": "compilerOptions",
-  "5": "MainActivity.kt",
+  "5": "App.tsx",
   "6": "Prefs",
   "7": "Design System Master File",
   "8": "compilerOptions",
-  "9": ".run",
   "10": "SamGent",
   "11": ".oxlintrc.json",
   "12": "SamGent Android app",
@@ -18,9 +17,8 @@
   "16": "android-app/build.gradle.kts",
   "17": "settings.gradle.kts",
   "18": "gradlew",
-  "19": "WifiReceiver.kt",
+  "19": "WifiMonitor.kt",
   "20": "Export APK after every change",
   "21": "IntervalConfig.kt",
-  "22": "SmsReceiver.kt",
-  "23": "dependencies"
+  "22": "SmsReceiver.kt"
 }
